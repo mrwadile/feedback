@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Questions - Feedback</title>
+    <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/site.css" />
+</head>
+
+<body>
+    <div class="split-container" id="mainContainer">
+        <!-- Left Panel -->
+        <div class="left-panel">
+            <div class="header-section">
+                <!-- Three colored lines/indicators -->
+                <div class="slider-indicators">
+                    <div class="slider-line active" style="background-color: white;"></div>
+                    <div class="slider-line next"></div>
+                    <div class="slider-line"></div>
+                </div>
+
+                <img src="images/logo.png" alt="Centenary Bank" class="brand-logo" />
+            </div>
+
+            <div class="marketing-image">
+                <img src="images/marketing.png" alt="Bank on the go" />
+            </div>
+
+            <div class="marketing-text">
+                <h2>Bank <span class="text-highlight-yellow">on the go</span><br />using CenteMobile</h2>
+                <div class="marketing-footer">Dial *211# or download the App today</div>
+            </div>
+        </div>
+
+        <!-- Right Panel -->
+        <div class="right-panel">
+            <div class="lang-selector">
+                <button class="btn btn-lang">
+                    English
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 9l6 6 6-6" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="question-container fade-enter-active" id="questionContainer">
+                <!-- Content injected by JS -->
+            </div>
+
+            <div class="provider-footer">
+                POWERED BY 4POWER.BIZ
+            </div>
+        </div>
+    </div>
+
+    <!-- Templates -->
+    <template id="tmpl-emoji">
+        <div class="question-counter">QUESTION <span class="q-current"></span> OF <span class="q-total"></span></div>
+        <h1 class="question-text"></h1>
+        <div class="emoji-rating">
+            <button class="emoji-btn" data-val="1">😡</button>
+            <button class="emoji-btn" data-val="2">☹️</button>
+            <button class="emoji-btn" data-val="3">😐</button>
+            <button class="emoji-btn" data-val="4">😊</button>
+            <button class="emoji-btn" data-val="5">😍</button>
+        </div>
+    </template>
+
+    <template id="tmpl-scale">
+        <div class="question-counter">QUESTION <span class="q-current"></span> OF <span class="q-total"></span></div>
+        <h1 class="question-text"></h1>
+        <div class="numeric-rating-container">
+            <div class="numeric-scale">
+                <button class="scale-btn" data-val="1">1</button>
+                <button class="scale-btn" data-val="2">2</button>
+                <button class="scale-btn" data-val="3">3</button>
+                <button class="scale-btn" data-val="4">4</button>
+                <button class="scale-btn" data-val="5">5</button>
+                <button class="scale-btn" data-val="6">6</button>
+                <button class="scale-btn" data-val="7">7</button>
+                <button class="scale-btn" data-val="8">8</button>
+                <button class="scale-btn" data-val="9">9</button>
+                <button class="scale-btn" data-val="10">10</button>
+            </div>
+            <div class="scale-labels">
+                <span class="label-left">Poor</span>
+                <span class="label-center">Neutral</span>
+                <span class="label-right">Excellent</span>
+            </div>
+        </div>
+    </template>
+
+    <template id="tmpl-text">
+        <div class="question-counter">QUESTION <span class="q-current"></span> OF <span class="q-total"></span></div>
+        <h1 class="question-text"></h1>
+        <div class="feedback-input-container">
+            <textarea class="feedback-textarea" placeholder="Thank you for survey" maxlength="200"></textarea>
+            <div class="char-counter">20/200</div>
+            <button class="btn btn-submit-feedback">Submit feedback</button>
+        </div>
+    </template>
+
+    <template id="tmpl-thankyou">
+        <div class="thank-you-screen">
+            <div class="check-icon-circle">
+                <!-- Animated Check Icon SVG -->
+                <svg class="check-icon-svg" viewBox="0 0 52 52">
+                    <path d="M14 27 L22 35 L38 19" />
+                </svg>
+            </div>
+            <div class="thank-you-text">Thank you for your feedback</div>
+        </div>
+    </template>
+
+    <script src="lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const questions = [
+            {
+                id: 1,
+                type: 'emoji',
+                text: "How would you rate the friendliness of our staff during your interaction?"
+            },
+            {
+                id: 2,
+                type: 'emoji',
+                text: "How would you rate the timeliness of the service provided?"
+            },
+            {
+                id: 3,
+                type: 'emoji',
+                text: "On a scale of 1 to 10, how satisfied are you with services/ solutions"
+            },
+            {
+                id: 4,
+                type: 'scale',
+                text: "What can we do to improve your banking experience?"
+            },
+            {
+                id: 5,
+                type: 'text',
+                text: "How would you rate our customer service?"
+            }
+        ];
+
+        let currentStep = 0;
+        const container = document.getElementById('questionContainer');
+
+        function renderQuestion() {
+            container.classList.remove('fade-enter-active');
+            container.classList.add('fade-enter');
+
+            setTimeout(() => {
+                if (currentStep >= questions.length) {
+                    renderFinish();
+                } else {
+                    const q = questions[currentStep];
+                    let templateId = 'tmpl-' + q.type;
+                    const template = document.getElementById(templateId);
+                    const clone = template.content.cloneNode(true);
+
+                    // Update dynamic fields if they exist
+                    const qCurrent = clone.querySelector('.q-current');
+                    if (qCurrent) qCurrent.textContent = currentStep + 1;
+
+                    const qTotal = clone.querySelector('.q-total');
+                    if (qTotal) qTotal.textContent = questions.length;
+
+                    const qText = clone.querySelector('.question-text');
+                    if (qText) qText.textContent = q.text;
+
+                    // Attach events based on type
+                    if (q.type === 'emoji') {
+                        clone.querySelectorAll('.emoji-btn').forEach(btn => {
+                            btn.onclick = () => handleAnswer(btn.dataset.val);
+                        });
+                    } else if (q.type === 'scale') {
+                        clone.querySelectorAll('.scale-btn').forEach(btn => {
+                            btn.onclick = () => handleAnswer(btn.dataset.val);
+                        });
+                    } else if (q.type === 'text') {
+                        const submitBtn = clone.querySelector('.btn-submit-feedback');
+                        const textarea = clone.querySelector('.feedback-textarea');
+                        submitBtn.onclick = () => handleAnswer(textarea.value);
+                    }
+
+                    container.innerHTML = '';
+                    container.appendChild(clone);
+                }
+
+                // Fade In
+                requestAnimationFrame(() => {
+                    container.classList.remove('fade-enter');
+                    container.classList.add('fade-enter-active');
+                });
+
+            }, 300);
+        }
+
+        function renderFinish() {
+            const template = document.getElementById('tmpl-thankyou');
+            // Append to body to cover everything
+            document.body.appendChild(template.content.cloneNode(true));
+        }
+
+        function handleAnswer(value) {
+            const q = questions[currentStep];
+
+            // Simulation log
+            console.log(`Answer for Q${q.id}: ${value}`);
+
+            // Skip backend fetch for static demo
+            // fetch(...) 
+
+            currentStep++;
+            renderQuestion();
+        }
+
+        // Initialize
+        renderQuestion();
+    </script>
+</body>
+
+</html>
