@@ -1,0 +1,49 @@
+@{
+    Layout = null;
+    ViewData["Title"] = "Survey";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Feedback</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+
+<body>
+    <div class="landing-page">
+        <!-- Logo Area -->
+        <div class="landing-logo">
+            <!-- Approximating the logo with SVG -->
+            <svg viewBox="0 0 100 100" width="40" height="40">
+                <!-- Base Road/Triangle -->
+                <path d="M50 15 L85 85 L15 85 Z" fill="#FFD700" />
+                <!-- Red Path/Cross -->
+                <path d="M50 15 L50 85" stroke="#D32F2F" stroke-width="8" />
+                <path d="M35 40 L65 40" stroke="#D32F2F" stroke-width="8" />
+            </svg>
+        </div>
+
+        <div class="landing-content">
+            <h1 class="landing-title">
+                <div class="landing-title-row">
+                    <span>We value our</span>
+                    <span class="landing-highlight">Customer's</span>
+                </div>
+                <div class="landing-title-row">
+                    <span>Opinions</span>
+                    <span class="landing-highlight">and</span>
+                    <span>Feedback.</span>
+                </div>
+            </h1>
+
+            <a href="@Url.Action("Questions", "ServiceEvaluator")" class="btn btn-start">Get started</a>
+        </div>
+    </div>
+</body>
+
+</html>
